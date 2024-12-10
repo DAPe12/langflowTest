@@ -1,4 +1,8 @@
-pandas
-matplotlib
-numpy
+
 langflow
+openai
+pandas
+PyPDF2
+networkx
+scikit-learn
+matplotlib
