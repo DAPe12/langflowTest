@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 from uuid import UUID
 
+import anyio
 import orjson
 import pytest
 from asgi_lifespan import LifespanManager
@@ -63,10 +64,10 @@ def blockbuster(request):
                 "io.TextIOWrapper.read",
             ]:
                 bb.functions[func].can_block_functions.append(("importlib_metadata/__init__.py", {"metadata"}))
+
             for func in bb.functions:
                 if func.startswith("sqlite3."):
                     bb.functions[func].deactivate()
-            bb.functions["threading.Lock.acquire"].deactivate()
             yield bb
 
 
@@ -365,7 +366,7 @@ async def client_fixture(
         monkeypatch.undo()
         # clear the temp db
         with suppress(FileNotFoundError):
-            db_path.unlink()
+            await anyio.Path(db_path).unlink()
 
 
 # create a fixture for session_getter above
